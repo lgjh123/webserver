@@ -11,7 +11,8 @@ const char* error_404_form = "The requested file was not found on this server.\n
 const char* error_500_title = "Internal Error";
 const char* error_500_form = "There was an unusual problem serving the requested file.\n";
 //网站的根目录
-const char* doc_root = "/var/www/html";
+//const char* doc_root = "/var/www/html";
+const char* doc_root = "/home/lee/sophomore2/webserver/Webserver1";
 
 int setnonblocking( int fd )
 {
@@ -99,6 +100,7 @@ http_conn::LINE_STATUS http_conn::parse_line()
     char temp;
     for(; m_checked_idx < m_read_idx; ++m_checked_idx )
     {
+        temp = m_read_buf[m_checked_idx]; ///!!!!!!!!!!!!!!!!!!!1
         if( temp == '\r')
         {
             if( ( m_checked_idx + 1 ) == m_read_idx )
@@ -269,7 +271,6 @@ http_conn::HTTP_CODE http_conn::process_read()
         text = get_line();
         m_start_line = m_checked_idx;
         printf("got 1 http line: %s\n", text );
-
         switch( m_check_state )
         {
             case CHECK_STATE_REQUESTLINE:
@@ -457,6 +458,8 @@ bool http_conn::add_content( const char* content )
 //根据服务器处理HTTP请求的结果，决定返回给客户端的内容
 bool http_conn::process_write( HTTP_CODE ret )
 {
+    std::cout << "hello write!!" << std::endl;
+    std::cout << "ret = " << ret << std::endl;
     switch ( ret )
     {
         case INTERNAL_ERROR:
@@ -542,7 +545,6 @@ void http_conn::process()
         modfd( m_epollfd, m_sockfd, EPOLLIN );
         return ;
     }
-
     bool write_ret = process_write( read_ret );
     if( ! write_ret )
     {
